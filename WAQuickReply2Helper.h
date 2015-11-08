@@ -204,6 +204,7 @@ static NSString *formatDictValue(NSObject *object) {
 - (void)setXmppUser:(id)arg1;
 - (void)reloadPassword;
 - (void)connect;
+- (void)reallyConnect;
 @end
 
 @interface WASharedAppData : NSObject

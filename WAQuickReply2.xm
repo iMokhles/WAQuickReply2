@@ -211,7 +211,7 @@ static NSMutableArray *getAllUsersFromChats(NSString *keyword) {
 static NSMutableArray *getUserChatMessages(NSString *userJID) {
 
     call_WhatsApp();
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"com.imokhles.waquickreply.sender" object:nil userInfo:nil]; // fake message to wake-up the app before real message
+
     NSMutableArray *messagesMutable = nil;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSDictionary *appInfoGet = [WAQuickReply2Helper getAppInfoFromAppID:@"net.whatsapp.WhatsApp"];
@@ -343,7 +343,8 @@ static NSMutableArray *getUserChatMessages(NSString *userJID) {
         }   
     }
     NSArray* reversedArray = [[messagesMutable reverseObjectEnumerator] allObjects];
-    return reversedArray;
+    NSArray *smallArray = [[reversedArray subarrayWithRange:NSMakeRange(0, 10)] mutableCopy];
+    return smallArray;
 }
 
 @implementation WAQuickReplyHandler
@@ -377,7 +378,6 @@ static NSMutableArray *getUserChatMessages(NSString *userJID) {
 }
 
 - (void)sendMessage:(id<CouriaMessage>)message toUser:(NSString *)userIdentifier {
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"com.imokhles.waquickreply.sender" object:nil userInfo:nil];
 	WAQuickReplyMessage *waMessage = [[WAQuickReplyMessage alloc] init];
     waMessage.content = message.content;
     waMessage.outgoing = message.outgoing;
@@ -385,6 +385,9 @@ static NSMutableArray *getUserChatMessages(NSString *userJID) {
 
     NSMutableDictionary *messageDict = [NSMutableDictionary new];
     [messageDict setObject:userIdentifier forKey:@"jid"];
+    [messageDict setObject:@" " forKey:@"contentMSG"];
+    NSDictionary *userInfo = [messageDict copy];
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"com.imokhles.waquickreply.sender" object:nil userInfo:userInfo]; // fake message to wake up before real message
     call_WhatsApp();
 
     if ([waMessage.content isKindOfClass:NSURL.class]) {
@@ -501,14 +504,15 @@ XMPPConnection *xmConnection;
     return sharedSender;
 }
 - (void)startSender {
-    // com.imokhles.waquickreply.sendimage
+    // com.imokhles.waquickreply.wakeup
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(waquickreply_notification:) name:@"com.imokhles.waquickreply.wakeup" object:nil];
     [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(waquickreply_notification:) name:@"com.imokhles.waquickreply.sendvideo" object:nil];
     [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(waquickreply_notification:) name:@"com.imokhles.waquickreply.sendimage" object:nil];
-	[[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(waquickreply_notification:) name:@"com.imokhles.waquickreply.sender" object:nil];
+    [[NSDistributedNotificationCenter defaultCenter] addObserver:self selector:@selector(waquickreply_notification:) name:@"com.imokhles.waquickreply.sender" object:nil];
 }
 
 - (void)waquickreply_notification:(NSNotification *)notification {
-	NSDictionary *userInfo = [notification userInfo];
+    NSDictionary *userInfo = [notification userInfo];
     NSString *jid = [userInfo objectForKey:@"jid"];
     // BOOL isURL = [[userInfo objectForKey:@"isURL"] boolValue];
     id msgContent = [userInfo objectForKey:@"contentMSG"];
@@ -519,6 +523,9 @@ XMPPConnection *xmConnection;
         [self sendMessageText:(NSString *)msgContent forJID:jid];
     } else if ([notification.name isEqualToString:@"com.imokhles.waquickreply.sendvideo"]) {
         [self sendVideoMessageFromPath:mediaPath forJID:jid];
+    } else if ([notification.name isEqualToString:@"com.imokhles.waquickreply.wakeup"]) {
+        // testing ;)
+        [xmConnection reallyConnect];
     }
     
 }
