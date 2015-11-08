@@ -1,2 +1,2 @@
 # WAQuickReply2
-Courier extension for WhatsApp
+Couria extension for WhatsApp
