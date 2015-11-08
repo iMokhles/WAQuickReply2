@@ -1,6 +1,11 @@
 # WAQuickReply2
 Couria extension for WhatsApp
 
+
+## License 
+
+GPLv3 : you can learn from it, but don't re-package it and call it your own.
+
 ## Thanks
 
 Special thanks to [@Qusic](https://github.com/Qusic) for [Couria](https://github.com/Qusic/Couria)
