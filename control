@@ -1,0 +1,9 @@
+Package: com.imokhles.waquickreply2
+Name: WAQuickReply2
+Conflicts: com.imokhles.waquickreply.bb
+Depends: mobilesubstrate, firmware (>= 8.0), com.imokhles.imodevtools
+Version: 0.0.1
+Architecture: iphoneos-arm
+Description: WAQuickReply2 with Couria Support
+Author: iMokhles <mokhleshussien@aol.com>
+Section: Tweaks

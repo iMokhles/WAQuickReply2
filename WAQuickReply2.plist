@@ -1,0 +1,12 @@
+{
+	Filter = {
+		Bundles = (
+			"com.apple.springboard",
+			"net.whatsapp.WhatsApp",
+		);
+		Executables = (
+			assertiond,
+			MessagesNotificationViewService,
+		);
+	};
+}
